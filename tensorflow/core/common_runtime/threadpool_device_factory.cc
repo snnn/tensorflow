@@ -23,6 +23,20 @@ limitations under the License.
 
 namespace tensorflow {
 
+static Bytes getMemorySize() {
+#ifdef _WIN32
+  MEMORYSTATUSEX statex;
+  statex.dwLength = sizeof(statex);
+  if (GlobalMemoryStatusEx(&statex) == FALSE) {
+    LOG(FATAL) << "cannot get memory info, error code = " << GetLastError();
+  }
+  return Bytes(statex.ullTotalPhys);
+#else
+  // TODO: get this information from sysconf or sysctl
+  return Bytes(256 << 20);
+#endif
+}
+
 // TODO(zhifengc/tucker): Figure out the bytes of available RAM.
 class ThreadPoolDeviceFactory : public DeviceFactory {
  public:
