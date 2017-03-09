@@ -22,7 +22,7 @@ if(WIN32)
       PATCH_COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/patches/farmhash/CMakeLists.txt ${farmhash_BUILD}
       INSTALL_DIR ${farmhash_INSTALL}
       CMAKE_CACHE_ARGS
-          -DCMAKE_BUILD_TYPE:STRING=Release
+          
           -DCMAKE_VERBOSE_MAKEFILE:BOOL=OFF
           -DCMAKE_INSTALL_PREFIX:STRING=${farmhash_INSTALL})
 else()

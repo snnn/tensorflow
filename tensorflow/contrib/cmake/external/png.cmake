@@ -7,7 +7,11 @@ set(png_BUILD ${CMAKE_BINARY_DIR}/png/src/png)
 set(png_INSTALL ${CMAKE_BINARY_DIR}/png/install)
 
 if(WIN32)
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+  set(png_STATIC_LIBRARIES ${CMAKE_BINARY_DIR}/png/install/lib/libpng12_staticd.lib)
+else()
   set(png_STATIC_LIBRARIES ${CMAKE_BINARY_DIR}/png/install/lib/libpng12_static.lib)
+endif()	
 else()
   set(png_STATIC_LIBRARIES ${CMAKE_BINARY_DIR}/png/install/lib/libpng12.a)
 endif()
@@ -25,7 +29,7 @@ ExternalProject_Add(png
     INSTALL_DIR ${png_INSTALL}
     DOWNLOAD_DIR "${DOWNLOAD_LOCATION}"
     CMAKE_CACHE_ARGS
-        -DCMAKE_BUILD_TYPE:STRING=Release
+        
         -DCMAKE_VERBOSE_MAKEFILE:BOOL=OFF
         -DCMAKE_INSTALL_PREFIX:STRING=${png_INSTALL}
 	-DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON

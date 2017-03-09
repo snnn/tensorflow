@@ -36,7 +36,7 @@ if (WIN32)
         INSTALL_DIR ${jpeg_INSTALL}
         DOWNLOAD_DIR "${DOWNLOAD_LOCATION}"
         CMAKE_CACHE_ARGS
-            -DCMAKE_BUILD_TYPE:STRING=Release
+            
             -DCMAKE_VERBOSE_MAKEFILE:BOOL=OFF
             -DCMAKE_INSTALL_PREFIX:STRING=${jpeg_INSTALL}
     )
