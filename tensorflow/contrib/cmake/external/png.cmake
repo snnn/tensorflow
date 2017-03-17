@@ -23,7 +23,6 @@ set(png_HEADERS
 
 ExternalProject_Add(png
     PREFIX png
-    DEPENDS zlib
     URL ${png_URL}
     URL_HASH ${png_HASH}
     INSTALL_DIR ${png_INSTALL}
@@ -33,7 +32,6 @@ ExternalProject_Add(png
         -DCMAKE_VERBOSE_MAKEFILE:BOOL=OFF
         -DCMAKE_INSTALL_PREFIX:STRING=${png_INSTALL}
 	-DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
-	-DZLIB_ROOT:STRING=${ZLIB_INSTALL}
 )
 
 ## put png includes in the directory where they are expected

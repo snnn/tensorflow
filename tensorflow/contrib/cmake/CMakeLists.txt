@@ -58,7 +58,7 @@ mark_as_advanced(DOWNLOAD_LOCATION)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 add_definitions(-DEIGEN_AVOID_STL_ARRAY)
 if(WIN32)
-  add_definitions(-DNOMINMAX -D_WIN32_WINNT=0x0A00 -DLANG_CXX11 -DCOMPILER_MSVC)
+  add_definitions(-DPROTOBUF_USE_DLLS -DNOMINMAX -D_WIN32_WINNT=0x0A00 -DLANG_CXX11 -DCOMPILER_MSVC)
   add_definitions(-DWIN32 -DOS_WIN -D_MBCS -DWIN64 -DWIN32_LEAN_AND_MEAN -DNOGDI -DPLATFORM_WINDOWS)
   add_definitions(-DTENSORFLOW_USE_EIGEN_THREADPOOL -DEIGEN_HAS_C99_MATH)
   add_definitions(-DTF_COMPILE_LIBRARY)
@@ -69,9 +69,9 @@ if(WIN32)
   add_definitions(/bigobj /nologo /EHsc /GF /FC /MP /Gm-)
   # Suppress warnings to reduce build log size.
   add_definitions(/wd4267 /wd4244 /wd4800 /wd4503 /wd4554 /wd4996 /wd4348 /wd4018)
-  add_definitions(/wd4099 /wd4146 /wd4267 /wd4305 /wd4307)
+  add_definitions(/wd4099 /wd4146 /wd4267 /wd4305 /wd4307 /wd4251)
   add_definitions(/wd4715 /wd4722 /wd4723 /wd4838 /wd4309 /wd4334)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /FI${PROJECT_SOURCE_DIR}/proto_define.h /MP")
 endif()
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
@@ -105,8 +105,18 @@ if (tensorflow_ENABLE_JEMALLOC_SUPPORT)
   add_definitions(-DTENSORFLOW_USE_JEMALLOC -DJEMALLOC_EXPORT=)
 endif()
 
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+  set(zlib_STATIC_LIBRARIES zlibd.lib)
+  set(protobuf_STATIC_LIBRARIES C:/portable/protobuf/lib/libprotobufd.lib)
+else()
+  set(zlib_STATIC_LIBRARIES zlib.lib)
+  set(protobuf_STATIC_LIBRARIES C:/portable/protobuf/lib/libprotobuf.lib)
+endif()
+set(PROTOBUF_INCLUDE_DIRS "D:\\os\\protobuf\\src")
+set(PROTOBUF_PROTOC_EXECUTABLE C:/portable/protobuf/bin/protoc)
+
 # External dependencies
-include(zlib)
+#include(zlib)
 include(gif)
 include(png)
 include(jpeg)
@@ -115,10 +125,12 @@ include(gemmlowp)
 include(jsoncpp)
 include(farmhash)
 include(highwayhash)
-include(protobuf)
+#include(protobuf)
 if (tensorflow_BUILD_CC_TESTS)
   include(googletest)
 endif()
+
+
 
 set(tensorflow_EXTERNAL_LIBRARIES
     ${zlib_STATIC_LIBRARIES}
@@ -131,19 +143,18 @@ set(tensorflow_EXTERNAL_LIBRARIES
     ${protobuf_STATIC_LIBRARIES}
 )
 set(tensorflow_EXTERNAL_DEPENDENCIES
-    zlib_copy_headers_to_destination
     gif_copy_headers_to_destination
     png_copy_headers_to_destination
     jpeg_copy_headers_to_destination
     jsoncpp
     farmhash_copy_headers_to_destination
     highwayhash_copy_headers_to_destination
-    protobuf
     eigen
     gemmlowp
 )
 
 include_directories(
+    "C:\\portable\\protobuf\\include"
     # Source and generated code.
     ${tensorflow_source_dir}
     ${CMAKE_CURRENT_BINARY_DIR}
@@ -191,12 +202,12 @@ if (tensorflow_ENABLE_GPU)
 
     # by default we assume compute cabability 3.5 and 5.2. If you change this change it in
     # CUDA_NVCC_FLAGS and cuda_config.h below
-    set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-gencode arch=compute_30,code=\"sm_30,compute_30\";-gencode arch=compute_35,code=\"sm_35,compute_35\";-gencode arch=compute_52,code=\"sm_52,compute_52\")
+    set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-gencode arch=compute_35,code=\"sm_35,compute_35\";-gencode arch=compute_52,code=\"sm_52,compute_52\")
     set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};--include-path ${PROJECT_BINARY_DIR}/$\{build_configuration\};--expt-relaxed-constexpr)
     set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-ftz=true)  # Flush denormals to zero
     set(CUDA_INCLUDE ${CUDA_TOOLKIT_TARGET_DIR} ${CUDA_TOOLKIT_TARGET_DIR}/extras/CUPTI/include)
     include_directories(${CUDA_INCLUDE})
-    add_definitions(-DGOOGLE_CUDA=1 -DTF_EXTRA_CUDA_CAPABILITIES=3.0,3.5,5.2)
+    add_definitions(-DGOOGLE_CUDA=1 -DTF_EXTRA_CUDA_CAPABILITIES=3.5,5.2)
 
     # add cudnn
     include_directories(${CUDNN_HOME})
@@ -207,7 +218,7 @@ if (tensorflow_ENABLE_GPU)
     FILE(WRITE ${tensorflow_source_dir}/third_party/gpus/cuda/cuda_config.h
       "#ifndef CUDA_CUDA_CONFIG_H_\n"
       "#define CUDA_CUDA_CONFIG_H_\n"
-      "#define TF_CUDA_CAPABILITIES CudaVersion(\"3.0\"),CudaVersion(\"3.5\"),CudaVersion(\"5.2\")\n"
+      "#define TF_CUDA_CAPABILITIES CudaVersion(\"3.5\"),CudaVersion(\"5.2\")\n"
       "#define TF_CUDA_VERSION \"64_80\"\n"
       "#define TF_CUDNN_VERSION \"64_5\"\n"
       "#define TF_CUDA_TOOLKIT_PATH \"${CUDA_TOOLKIT_ROOT_DIR}\"\n"

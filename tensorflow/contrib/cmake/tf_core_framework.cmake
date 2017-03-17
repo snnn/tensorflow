@@ -24,7 +24,7 @@ function(RELATIVE_PROTOBUF_GENERATE_CPP SRCS HDRS ROOT_DIR)
       OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${REL_DIR}/${FIL_WE}.pb.cc"
              "${CMAKE_CURRENT_BINARY_DIR}/${REL_DIR}/${FIL_WE}.pb.h"
       COMMAND  ${PROTOBUF_PROTOC_EXECUTABLE}
-      ARGS --cpp_out  ${CMAKE_CURRENT_BINARY_DIR} -I ${ROOT_DIR} ${ABS_FIL} -I ${PROTOBUF_INCLUDE_DIRS}
+      ARGS --cpp_out=dllexport_decl=TF_PROTOS_CC_EXPORT:${CMAKE_CURRENT_BINARY_DIR} -I ${ROOT_DIR} ${ABS_FIL} -I ${PROTOBUF_INCLUDE_DIRS}
       DEPENDS ${ABS_FIL} protobuf
       COMMENT "Running C++ protocol buffer compiler on ${FIL}"
       VERBATIM )
@@ -115,8 +115,8 @@ set(tf_proto_text_srcs
 RELATIVE_PROTOBUF_TEXT_GENERATE_CPP(PROTO_TEXT_SRCS PROTO_TEXT_HDRS
     ${tensorflow_source_dir} ${tf_proto_text_srcs}
 )
-
-add_library(tf_protos_cc ${PROTO_SRCS} ${PROTO_HDRS})
+add_library(tf_protos_cc SHARED ${PROTO_SRCS} ${PROTO_HDRS})
+target_link_libraries(tf_protos_cc ${protobuf_STATIC_LIBRARIES} ${zlib_STATIC_LIBRARIES})
 
 ########################################################
 # tf_core_lib library

@@ -96,7 +96,7 @@ function(RELATIVE_PROTOBUF_GENERATE_CPP SRCS HDRS ROOT_DIR)
       OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${REL_DIR}/${FIL_WE}.pb.cc"
              "${CMAKE_CURRENT_BINARY_DIR}/${REL_DIR}/${FIL_WE}.pb.h"
       COMMAND  ${PROTOBUF_PROTOC_EXECUTABLE}
-      ARGS --cpp_out  ${CMAKE_CURRENT_BINARY_DIR} -I ${ROOT_DIR} ${ABS_FIL} -I ${PROTOBUF_INCLUDE_DIRS}
+      ARGS --cpp_out=dllexport_decl=TF_PYTHON_PROTOS_CC_EXPORT:${CMAKE_CURRENT_BINARY_DIR} -I ${ROOT_DIR} ${ABS_FIL} -I ${PROTOBUF_INCLUDE_DIRS}
       DEPENDS ${ABS_FIL} protobuf
       COMMENT "Running C++ protocol buffer compiler on ${FIL}"
       VERBATIM )
@@ -133,8 +133,8 @@ RELATIVE_PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS
     ${tensorflow_source_dir} ${tf_python_protos_cc_srcs}
 )
 
-add_library(tf_python_protos_cc ${PROTO_SRCS} ${PROTO_HDRS})
-add_dependencies(tf_python_protos_cc tf_protos_cc)
+add_library(tf_python_protos_cc SHARED ${PROTO_SRCS} ${PROTO_HDRS})
+target_link_libraries(tf_python_protos_cc tf_protos_cc ${protobuf_STATIC_LIBRARIES} ${zlib_STATIC_LIBRARIES})
 
 # tf_python_touchup_modules adds empty __init__.py files to all
 # directories containing Python code, so that Python will recognize
