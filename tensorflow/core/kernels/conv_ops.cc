@@ -411,7 +411,7 @@ TF_CALL_float(REGISTER_CPU);
 
 // To be used inside depthwise_conv_op.cc.
 template class LaunchConv2DOp<CPUDevice, float>;
-
+template class LaunchConv2DOp<CPUDevice, double>;
 #if GOOGLE_CUDA
 int64 GetCudnnWorkspaceLimit(const string& envvar_in_mb,
                              int64 default_value_in_bytes) {

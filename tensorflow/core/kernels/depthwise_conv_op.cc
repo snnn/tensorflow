@@ -242,9 +242,9 @@ struct LaunchDepthwiseConvOp<CPUDevice, T> {
           shard_cost, shard);
   }
 };
-
 // Extern template instantiated in conv_ops.cc.
 extern template class LaunchConv2DOp<CPUDevice, float>;
+extern template class LaunchConv2DOp<CPUDevice, double>;
 
 #if GOOGLE_CUDA
 
@@ -426,7 +426,6 @@ class DepthwiseConv2dNativeOp : public BinaryOp<T> {
   TensorFormat data_format_;
 
   int64 stride_;  // in height/width dimension.
-
   // For the case in_depth == 1.
   LaunchConv2DOp<Device, T> launcher_;
   bool use_cudnn_;
