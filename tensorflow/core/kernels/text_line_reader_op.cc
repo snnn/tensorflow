@@ -73,6 +73,30 @@ class TextLineReader : public ReaderBase {
     }
   }
 
+  Status ReadUpToLocked(int64 num_records, std::vector<string>* keys,
+                        std::vector<string>* values, int64* num_read,
+                        bool* at_end) {
+    int64 i = 0;
+    string value;
+    Status status;
+    for (; i != num_records; ++i) {
+      status = input_buffer_->ReadLine(&value);
+      ++line_number_;
+      if (!status.ok()) {
+        if (errors::IsOutOfRange(
+                status)) {  // End of file, advance to the next.
+          *at_end = true;
+		  status = Status::OK();
+        }
+        break;
+      }
+      values->emplace_back(value);
+      keys->emplace_back(strings::StrCat(current_work(), ":", line_number_));
+    }
+    *num_read = i;
+    return status;
+  }
+
   Status ResetLocked() override {
     line_number_ = 0;
     input_buffer_.reset(nullptr);
