@@ -58,7 +58,7 @@ class WindowsEnv : public Env {
     // versions of Windows. For that reason, we try to look it up in
     // kernel32.dll at runtime and use an alternative option if the function
     // is not available.
-    HMODULE module = GetModuleHandle("kernel32.dll");
+    HMODULE module = GetModuleHandle(__TEXT("kernel32.dll"));
     if (module != NULL) {
       auto func = (FnGetSystemTimePreciseAsFileTime)GetProcAddress(
           module, "GetSystemTimePreciseAsFileTime");
@@ -71,7 +71,7 @@ class WindowsEnv : public Env {
   }
 
   bool MatchPath(const string& path, const string& pattern) override {
-    return PathMatchSpec(path.c_str(), pattern.c_str()) == TRUE;
+    return PathMatchSpecA(path.c_str(), pattern.c_str()) == TRUE;
   }
 
   void SleepForMicroseconds(int64 micros) override { Sleep(micros / 1000); }
@@ -104,7 +104,7 @@ class WindowsEnv : public Env {
     std::replace(file_name.begin(), file_name.end(), '/', '\\');
 
     HMODULE hModule =
-        LoadLibraryEx(file_name.c_str(), NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
+        LoadLibraryExA(file_name.c_str(), NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
     if (!hModule) {
       DWORD err_code = GetLastError();
       char buf[128];

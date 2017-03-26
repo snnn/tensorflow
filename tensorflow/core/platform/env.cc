@@ -262,7 +262,7 @@ string Env::GetExecutablePath() {
   CHECK(realpath(unresolved_path, exe_path));
 #elif defined(PLATFORM_WINDOWS)
   HMODULE hModule = GetModuleHandle(NULL);
-  GetModuleFileName(hModule, exe_path, MAX_PATH);
+  GetModuleFileNameA(hModule, exe_path, MAX_PATH);
 #else
   CHECK_NE(-1, readlink("/proc/self/exe", exe_path, sizeof(exe_path) - 1));
 #endif
