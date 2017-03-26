@@ -84,7 +84,7 @@ class TextLineReader : public ReaderBase {
   // line_number_, and input_buffer_->Tell().
 
  private:
-  enum { kBufferSize = 256 << 10 /* 256 kB */ };
+  enum { kBufferSize = 2 << 20 /* 256 kB */ };
   const int skip_header_lines_;
   Env* const env_;
   int64 line_number_;
