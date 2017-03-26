@@ -28,7 +28,7 @@ limitations under the License.
 #include "tensorflow/stream_executor/platform.h"
 #include "tensorflow/stream_executor/platform/mutex.h"
 
-#if !defined(PLATFORM_GOOGLE)
+#ifdef GOOGLE_CUDA
 #include "cuda/cuda_config.h"
 #endif
 
