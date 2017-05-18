@@ -370,7 +370,7 @@ void Generator::AppendParseMessageFunction(const Descriptor& md) {
   const bool map_append = (md.options().map_entry());
   string sig;
   if (!map_append) {
-    sig = StrCat("bool ProtoParseFromString(\n    const string& s,\n    ",
+    sig = StrCat("bool ProtoParseFromString(\n    const tensorflow::string& s,\n    ",
                  GetQualifiedName(md), "* msg)");
     SetOutput(&header_).Print(sig, "\n        TF_MUST_USE_RESULT;");
 
@@ -442,7 +442,7 @@ void Generator::AppendParseMessageFunction(const Descriptor& md) {
   Print("scanner->RestartCapture()");
   Print("    .Many(Scanner::LETTER_DIGIT_UNDERSCORE)");
   Print("    .StopCapture();");
-  Print("StringPiece identifier;");
+  Print("tensorflow::StringPiece identifier;");
   Print("if (!scanner->GetResult(nullptr, &identifier)) return false;");
   Print("bool parsed_colon = false;");
   Print("(void)parsed_colon;"); // Avoid "set but not used" compiler warning
@@ -515,7 +515,7 @@ void Generator::AppendParseMessageFunction(const Descriptor& md) {
       Print("    scanner, true, open_char == '{', ", mutable_value_expr,
             ")) return false;");
     } else if (field->cpp_type() == FieldDescriptor::CPPTYPE_STRING) {
-      Print("string str_value;");
+      Print("tensorflow::string str_value;");
       Print(
           "if (!parsed_colon || "
           "!::tensorflow::strings::ProtoParseStringLiteralFromScanner(");
@@ -523,7 +523,7 @@ void Generator::AppendParseMessageFunction(const Descriptor& md) {
       Print("SetProtobufStringSwapAllowed(&str_value, ", mutable_value_expr,
             ");");
     } else if (field->cpp_type() == FieldDescriptor::CPPTYPE_ENUM) {
-      Print("StringPiece value;");
+      Print("tensorflow::StringPiece value;");
       Print(
           "if (!parsed_colon || "
           "!scanner->RestartCapture().Many("
@@ -609,13 +609,13 @@ void Generator::AppendDebugStringFunctions(const Descriptor& md) {
 
     // Make the Get functions.
     const string sig = StrCat(
-        "string ", short_debug ? "ProtoShortDebugString" : "ProtoDebugString",
+        "tensorflow::string ", short_debug ? "ProtoShortDebugString" : "ProtoDebugString",
         "(\n    const ", GetQualifiedName(md), "& msg)");
     SetOutput(&header_).Print(sig, ";");
 
     SetOutput(&cc_);
     Print().Print(sig, " {").Nest();
-    Print("string s;");
+    Print("tensorflow::string s;");
     Print("::tensorflow::strings::ProtoTextOutput o(&s, ",
           short_debug ? "true" : "false", ");");
     Print("internal::AppendProtoDebugString(&o, msg);");
@@ -807,6 +807,7 @@ void Generator::Generate(const FileDescriptor& fd) {
   Print();
   Print("using ::tensorflow::strings::Scanner;");
   Print("using ::tensorflow::strings::StrCat;");
+  Print("using namespace tensorflow;");
   AddNamespaceToCurrentSection(package, true /* is_open */);
 
   // Add declarations and definitions.
