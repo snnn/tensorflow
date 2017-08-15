@@ -359,11 +359,10 @@ def tf_workspace(path_prefix="", tf_repo_name=""):
   patched_http_archive(
       name = "protobuf_archive",
       urls = [
-          "https://github.com/google/protobuf/archive/0b059a3d8a8f8aa40dde7bea55edca4ec5dfea66.tar.gz",
-          "http://mirror.bazel.build/github.com/google/protobuf/archive/0b059a3d8a8f8aa40dde7bea55edca4ec5dfea66.tar.gz",
+          "https://github.com/google/protobuf/archive/97d50e306e576dadf2184e643b7c934da45730c8.tar.gz",
+          "http://mirror.bazel.build/github.com/google/protobuf/archive/97d50e306e576dadf2184e643b7c934da45730c8.tar.gz",
       ],
-      sha256 = "6d43b9d223ce09e5d4ce8b0060cb8a7513577a35a64c7e3dad10f0703bf3ad93",
-      strip_prefix = "protobuf-0b059a3d8a8f8aa40dde7bea55edca4ec5dfea66",
+      strip_prefix = "protobuf-97d50e306e576dadf2184e643b7c934da45730c8",
       # TODO: remove patching when tensorflow stops linking same protos into
       #       multiple shared libraries loaded in runtime by python.
       #       This patch fixes a runtime crash when tensorflow is compiled
@@ -382,21 +381,19 @@ def tf_workspace(path_prefix="", tf_repo_name=""):
   native.http_archive(
       name = "com_google_protobuf",
       urls = [
-          "https://github.com/google/protobuf/archive/0b059a3d8a8f8aa40dde7bea55edca4ec5dfea66.tar.gz",
-          "http://mirror.bazel.build/github.com/google/protobuf/archive/0b059a3d8a8f8aa40dde7bea55edca4ec5dfea66.tar.gz",
+          "https://github.com/google/protobuf/archive/97d50e306e576dadf2184e643b7c934da45730c8.tar.gz",
+          "http://mirror.bazel.build/github.com/google/protobuf/archive/97d50e306e576dadf2184e643b7c934da45730c8.tar.gz",
       ],
-      sha256 = "6d43b9d223ce09e5d4ce8b0060cb8a7513577a35a64c7e3dad10f0703bf3ad93",
-      strip_prefix = "protobuf-0b059a3d8a8f8aa40dde7bea55edca4ec5dfea66",
+      strip_prefix = "protobuf-97d50e306e576dadf2184e643b7c934da45730c8",
   )
 
   native.http_archive(
       name = "com_google_protobuf_cc",
       urls = [
-          "https://github.com/google/protobuf/archive/0b059a3d8a8f8aa40dde7bea55edca4ec5dfea66.tar.gz",
-          "http://mirror.bazel.build/github.com/google/protobuf/archive/0b059a3d8a8f8aa40dde7bea55edca4ec5dfea66.tar.gz",
+          "https://github.com/google/protobuf/archive/97d50e306e576dadf2184e643b7c934da45730c8.tar.gz",
+          "http://mirror.bazel.build/github.com/google/protobuf/archive/97d50e306e576dadf2184e643b7c934da45730c8.tar.gz",
       ],
-      sha256 = "6d43b9d223ce09e5d4ce8b0060cb8a7513577a35a64c7e3dad10f0703bf3ad93",
-      strip_prefix = "protobuf-0b059a3d8a8f8aa40dde7bea55edca4ec5dfea66",
+      strip_prefix = "protobuf-97d50e306e576dadf2184e643b7c934da45730c8",
   )
 
   native.new_http_archive(
@@ -489,17 +486,27 @@ def tf_workspace(path_prefix="", tf_repo_name=""):
       actual = "@grpc//third_party/nanopb:nanopb",
   )
 
-  patched_http_archive(
+  native.bind(
+    name = "cares",
+    actual = "@submodule_cares//:ares",
+  )
+  
+  native.http_archive(
       name = "grpc",
       urls = [
-          "http://mirror.bazel.build/github.com/grpc/grpc/archive/781fd6f6ea03645a520cd5c675da67ab61f87e4b.tar.gz",
-          "https://github.com/grpc/grpc/archive/781fd6f6ea03645a520cd5c675da67ab61f87e4b.tar.gz",
+          "https://github.com/grpc/grpc/archive/023bb45a2476e1a51e8c83b98be94740593ee6a5.tar.gz",
       ],
-      sha256 = "2004635e6a078acfac8ffa71738397796be4f8fb72f572cc44ecee5d99511d9f",
-      strip_prefix = "grpc-781fd6f6ea03645a520cd5c675da67ab61f87e4b",
-      patch_file = str(Label("//third_party/grpc:grpc.patch")),
+      strip_prefix = "grpc-023bb45a2476e1a51e8c83b98be94740593ee6a5",
   )
 
+  patched_http_archive(
+    name = "submodule_cares",
+    urls = [
+          "https://github.com/c-ares/c-ares/archive/7691f773af79bf75a62d1863fd0f13ebf9dc51b1.tar.gz",
+    ],
+	strip_prefix = "c-ares-7691f773af79bf75a62d1863fd0f13ebf9dc51b1",
+	patch_file = str(Label("//third_party/cares:1.patch")),
+  )
   # protobuf expects //external:grpc_cpp_plugin to point to grpc's
   # C++ plugin code generator.
   native.bind(
